@@ -1,7 +1,11 @@
-library code_sharp;
+import 'dart:isolate';
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer_plugin/starter.dart';
+
+import 'src/analyzer_plugin/analyzer_plugin.dart';
+
+void start(Iterable<String> _, SendPort sendPort) {
+  ServerPluginStarter(AnalyzerPlugin(PhysicalResourceProvider.INSTANCE))
+      .start(sendPort);
 }

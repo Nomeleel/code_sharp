@@ -1,0 +1,11 @@
+name: code_sharp_for_analyzer_plugin_loader
+description: This project of loader for analyzer plugin.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=2.15.0 <3.0.0"
+
+dependencies:
+  code_sharp:
+    path: /Users/choonlay/Documents/GitHub/code_sharp
