@@ -14,7 +14,7 @@ class AnalysisOptions {
   final List<String> rules;
 }
 
-YamlMap? loadByAnalysisDriver(AnalysisDriver driver) {
+YamlMap? loadAnalysisOptions(AnalysisDriver driver) {
   final file = driver.analysisContext?.contextRoot.optionsFile;
   if (file?.exists ?? false) {
     return AnalysisOptionsProvider(driver.sourceFactory).getOptionsFromFile(file!)['code_sharp'];

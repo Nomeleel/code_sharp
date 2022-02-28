@@ -13,7 +13,9 @@ import 'package:analyzer_plugin/plugin/plugin.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
+import 'package:code_sharp/src/analyzer/analyzer.dart';
 import 'package:code_sharp/src/fix/dart_fix_contributor.dart';
+import 'package:code_sharp/src/lint_rule/lint_rule.dart';
 
 class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
   @override
@@ -26,7 +28,7 @@ class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
   String get name => 'Code Sharp';
 
   @override
-  String get version => '0.0.1';
+  String get version => '1.0.0-alpha.0';
 
   AnalyzerPlugin(ResourceProvider provider) : super(provider);
 
@@ -49,6 +51,8 @@ class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
       throw error;
     }
 
+    registerLintRules();
+
     final builder = ContextBuilder(resourceProvider: resourceProvider);
     final context = builder.createContext(contextRoot: locator.first) as DriverBasedAnalysisContext;
 
@@ -65,12 +69,12 @@ class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
   }
 
   _listenDriverResults(AnalysisDriver driver) {
-    driver.results.listen((result) {
+    driver.results.listen((result) async {
       if (result is ResolvedUnitResult) {
         try {
           final errors = <AnalysisError>[];
           if (driver.analysisContext?.contextRoot.isAnalyzed(result.path) ?? false) {
-            errors.addAll(_analysis());
+            errors.addAll(await analysis(driver, result.path));
           }
           channel.sendNotification(AnalysisErrorsParams(result.path, errors).toNotification());
         } catch (e, stackTrace) {
@@ -78,11 +82,6 @@ class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
         }
       }
     });
-  }
-
-  List<AnalysisError> _analysis() {
-    // TODO(Nomeleel): imp
-    return [];
   }
 
   @override
