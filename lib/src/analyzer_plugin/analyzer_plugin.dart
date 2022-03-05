@@ -17,7 +17,9 @@ import 'package:code_sharp/src/analyzer/analyzer.dart';
 import 'package:code_sharp/src/fix/dart_fix_contributor.dart';
 import 'package:code_sharp/src/lint_rule/lint_rule.dart';
 
-class AnalyzerPlugin extends ServerPlugin with FixesMixin, DartFixesMixin {
+import 'seasonable_analysis_mixin.dart';
+
+class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMixin, DartFixesMixin {
   @override
   String get contactInfo => 'https://github.com/Nomeleel/code_sharp/issues';
 
