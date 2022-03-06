@@ -19,7 +19,8 @@ Future<Iterable<AnalysisError>> analysis2(AnalysisDriver driver, ResolvedUnitRes
   final path = result.path;
   if (driver.analysisContext?.contextRoot.isAnalyzed(path) ?? false) {
     final linterOptions = loadLinterOptions(driver);
-    if (isDartFile(File(path)) && linterOptions.fileFilter.filterPath(path)) {
+    // TODO(Nomeleel): Filter as much as possible
+    if (isDartFile(File(path)) && !linterOptions.fileFilter.filterPath(path)) {
       final ignoreInfo = IgnoreInfo.forDart(result.unit, result.content);
       return linterOptions.enabledLints.where((lint) => ignoreInfo.ignoredAtFile(lint.lintCode)).expand((rule) {
         // TODO(Nomeleel): Imp
