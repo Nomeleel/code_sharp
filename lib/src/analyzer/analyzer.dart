@@ -3,12 +3,12 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/error/error.dart' as error;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/ignore_comments/ignore_info.dart';
 import 'package:analyzer/src/lint/analysis.dart';
 import 'package:analyzer/src/lint/io.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/utilities/analyzer_converter.dart';
 
 import '/src/extension/file_glob_filter_extension.dart';
 import '/src/extension/ignore_info_extension.dart';
@@ -36,22 +36,11 @@ Future<Iterable<AnalysisError>> analysis(AnalysisDriver driver, String fileToAna
   final linterOptions = loadLinterOptions(driver);
   final lintDriver = LintDriver(linterOptions);
   final analysisErrorInfo = await lintDriver.analyze([File(fileToAnalysis)].where((f) => isDartFile(f)));
-  return analysisErrorInfo.expand((info) => info.errors.map(mapToPluginAnalysisError));
-}
-
-AnalysisError mapToPluginAnalysisError(error.AnalysisError error) {
-  return AnalysisError(
-    AnalysisErrorSeverity.INFO,
-    AnalysisErrorType.LINT,
-    Location(
-      error.source.uri.path,
-      error.offset,
-      error.length,
-      // TODO(Nomeleel): Compute.
-      0,
-      0,
+  return analysisErrorInfo.expand(
+    (info) => AnalyzerConverter().convertAnalysisErrors(
+      info.errors,
+      lineInfo: info.lineInfo,
+      options: driver.analysisOptions,
     ),
-    error.errorCode.message,
-    error.errorCode.name,
   );
 }
