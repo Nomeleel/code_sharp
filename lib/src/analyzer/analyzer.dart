@@ -12,6 +12,7 @@ import 'package:analyzer_plugin/utilities/analyzer_converter.dart';
 
 import '/src/extension/file_glob_filter_extension.dart';
 import '/src/extension/ignore_info_extension.dart';
+import '/src/extension/lint_rule_extension.dart';
 import '/src/extension/linter_options_extension.dart';
 import '/src/linter_options/linter_options.dart';
 
@@ -23,8 +24,11 @@ Future<Iterable<AnalysisError>> analysis2(AnalysisDriver driver, ResolvedUnitRes
     if (isDartFile(File(path)) && !linterOptions.fileFilter.filterPath(path)) {
       final ignoreInfo = IgnoreInfo.forDart(result.unit, result.content);
       return linterOptions.enabledLints.where((lint) => !ignoreInfo.ignoredAtFile(lint.lintCode)).expand((rule) {
-        // TODO(Nomeleel): Imp
-        final errors = <AnalysisError>[];
+        final errors = AnalyzerConverter().convertAnalysisErrors(
+          rule.lint(result),
+          lineInfo: result.lineInfo,
+          options: driver.analysisOptions,
+        );
         return errors.where((error) => !ignoreInfo.ignoredAt(rule.lintCode, error.location.startLine));
       });
     }
