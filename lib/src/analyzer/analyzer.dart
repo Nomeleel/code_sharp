@@ -22,10 +22,10 @@ Future<Iterable<AnalysisError>> analysis2(AnalysisDriver driver, ResolvedUnitRes
     // TODO(Nomeleel): Filter as much as possible
     if (isDartFile(File(path)) && !linterOptions.fileFilter.filterPath(path)) {
       final ignoreInfo = IgnoreInfo.forDart(result.unit, result.content);
-      return linterOptions.enabledLints.where((lint) => ignoreInfo.ignoredAtFile(lint.lintCode)).expand((rule) {
+      return linterOptions.enabledLints.where((lint) => !ignoreInfo.ignoredAtFile(lint.lintCode)).expand((rule) {
         // TODO(Nomeleel): Imp
         final errors = <AnalysisError>[];
-        return errors.where((error) => ignoreInfo.ignoredAt(rule.lintCode, error.location.startLine));
+        return errors.where((error) => !ignoreInfo.ignoredAt(rule.lintCode, error.location.startLine));
       });
     }
   }
