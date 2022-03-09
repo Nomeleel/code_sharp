@@ -1,5 +1,3 @@
-// ignore_for_file: implementation_imports
-
 import 'package:analyzer/src/lint/config.dart';
 import 'package:analyzer/src/lint/linter.dart';
 import 'package:analyzer/src/lint/registry.dart';

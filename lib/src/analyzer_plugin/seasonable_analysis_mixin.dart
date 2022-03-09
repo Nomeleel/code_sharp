@@ -1,5 +1,3 @@
-// ignore_for_file: implementation_imports
-
 import 'package:analyzer_plugin/plugin/plugin.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
@@ -7,6 +5,7 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 mixin SeasonableAnalysisMixin on ServerPlugin {
   @override
   void contentChanged(String path) {
+    // TODO(Nomeleel): 不包含的文件夹配置 可以不添加
     driverForPath(path)?.addFile(path);
   }
 

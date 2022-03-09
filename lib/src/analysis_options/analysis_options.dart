@@ -1,5 +1,3 @@
-// ignore_for_file: implementation_imports
-
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/analysis_options/analysis_options_provider.dart';
 import 'package:yaml/yaml.dart';

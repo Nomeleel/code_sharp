@@ -1,5 +1,3 @@
-// ignore_for_file: implementation_imports
-
 import 'package:analyzer/src/dart/error/lint_codes.dart';
 import 'package:analyzer/src/ignore_comments/ignore_info.dart';
 

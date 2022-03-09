@@ -1,5 +1,3 @@
-// ignore_for_file: implementation_imports
-
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
