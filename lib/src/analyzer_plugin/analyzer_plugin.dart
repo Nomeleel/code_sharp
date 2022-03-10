@@ -10,8 +10,10 @@ import 'package:analyzer_plugin/plugin/fix_mixin.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
+import 'package:analyzer_plugin/utilities/analyzer_converter.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
 import 'package:code_sharp/src/analyzer/analyzer.dart';
+
 import 'package:code_sharp/src/fix/dart_fix_contributor.dart';
 import 'package:code_sharp/src/lint_rule/lint_rule.dart';
 
@@ -74,7 +76,11 @@ class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMix
         try {
           final errors = <AnalysisError>[];
           if (driver.analysisContext?.contextRoot.isAnalyzed(result.path) ?? false) {
-            errors.addAll(await analysis(driver, result.path));
+            errors.addAll(AnalyzerConverter().convertAnalysisErrors(
+              (await analysis(driver, result)).toList(),
+              lineInfo: result.lineInfo,
+              options: driver.analysisOptions,
+            ));
           }
           channel.sendNotification(AnalysisErrorsParams(result.path, errors).toNotification());
         } catch (e, stackTrace) {
@@ -87,8 +93,13 @@ class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMix
   @override
   Future<ResolvedUnitResult> getResolvedUnitResult(String path) async {
     final result = await super.getResolvedUnitResult(path);
-    // TODO(Nomeleel): imp
-    result.errors.addAll([]);
+    final driver = driverForPath(path);
+    if (driver is AnalysisDriver) {
+      result.errors
+        ..clear()
+        ..addAll(await analysis(driver, result));
+    }
+
     return result;
   }
 
