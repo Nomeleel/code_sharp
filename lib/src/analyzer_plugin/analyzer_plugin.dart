@@ -12,11 +12,10 @@ import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer_plugin/utilities/analyzer_converter.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
-import 'package:code_sharp/src/analyzer/analyzer.dart';
 
-import 'package:code_sharp/src/fix/dart_fix_contributor.dart';
-import 'package:code_sharp/src/lint_rule/lint_rule.dart';
-
+import '/src/analyzer/analyzer.dart';
+import '/src/correction/lint_fix_contributor.dart';
+import '/src/lint_rule/lint_rule.dart';
 import 'seasonable_analysis_mixin.dart';
 
 class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMixin, DartFixesMixin {
@@ -104,5 +103,5 @@ class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMix
   }
 
   @override
-  List<FixContributor> getFixContributors(String path) => [DartFixContributor()];
+  List<FixContributor> getFixContributors(String path) => [LintFixContributor()];
 }
