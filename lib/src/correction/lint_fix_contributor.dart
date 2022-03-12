@@ -13,7 +13,7 @@ class LintFixContributor extends FixContributor with FixContributorMixin {
     if (request == null) return;
     // TODO(Nomeleel): imp
     if (error.errorCode is LintCode) {
-      if (error.errorCode.name == 'sized_box_for_whitespace') {
+      if (error.errorCode.name == 'sized_box_for_whitespace_2') {
         final context = CorrectionProducerContext.create(
           resolvedResult: request!.result,
           analysisError: error,
@@ -30,8 +30,10 @@ class LintFixContributor extends FixContributor with FixContributorMixin {
     producer.configure(context);
     final changeBuilder = ChangeBuilder(
       session: request!.result.session,
+      // TODO(Nomeleel): imp
       // workspace:
     );
+    await producer.compute(changeBuilder);
     addFix(context.analysisError!, producer.fixKind, changeBuilder);
   }
 }
