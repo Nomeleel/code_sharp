@@ -17,8 +17,7 @@ LinterOptions loadLinterOptions(AnalysisDriver driver) {
   linterOptions.resourceProvider = PhysicalResourceProvider.INSTANCE;
   final analysisOptions = loadAnalysisOptions(driver);
   if (analysisOptions != null) {
-    // TODO(Nomeleel): Apply analyzer errors ignore option.
-    linterOptions.configure2(LintConfig.parseMap(analysisOptions));
+    linterOptions.configure2(LintConfig.parseMap(analysisOptions), driver.analysisOptions);
   }
   _linterOptionsMap[driver] = linterOptions;
 
