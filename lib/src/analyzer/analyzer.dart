@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
+import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/ignore_comments/ignore_info.dart';
 import 'package:analyzer/src/lint/analysis.dart';
 import 'package:analyzer/src/lint/io.dart';
@@ -19,12 +20,14 @@ Future<Iterable<AnalysisError>> analysis(AnalysisDriver driver, ResolvedUnitResu
     final linterOptions = loadLinterOptions(driver);
     // TODO(Nomeleel): Filter as much as possible
     if (isDartFile(File(path)) && !linterOptions.fileFilter.filterPath(path)) {
-      // TODO(Nomeleel): Apply analyzer cannot-ignore option.
-      final ignoreInfo = IgnoreInfo.forDart(result.unit, result.content);
+      final ignore = Ignore(
+        IgnoreInfo.forDart(result.unit, result.content),
+        (driver.analysisOptions as AnalysisOptionsImpl).unignorableNames,
+      );
       return linterOptions.enabledLints
-          .where((lint) => !ignoreInfo.ignoredAtFile(lint.lintCode))
+          .where((lint) => !ignore.ignoredAtFile(lint.lintCode))
           .expand((rule) => rule.lint(result).where(
-                (error) => !ignoreInfo.ignoredAt(
+                (error) => !ignore.ignoredAt(
                   rule.lintCode,
                   result.lineInfo.getLocation(error.offset).lineNumber,
                 ),
