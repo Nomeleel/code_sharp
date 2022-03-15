@@ -5,8 +5,12 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 mixin SeasonableAnalysisMixin on ServerPlugin {
   @override
   void contentChanged(String path) {
-    // TODO(Nomeleel): 不包含的文件夹配置 可以不添加
-    driverForPath(path)?.addFile(path);
+    final driver = driverForPath(path) as AnalysisDriver?;
+    if (driver != null) {
+      if (driver.analysisContext?.contextRoot.isAnalyzed(path) ?? false) {
+        driver.addFile(path);
+      }
+    }
   }
 
   @override
