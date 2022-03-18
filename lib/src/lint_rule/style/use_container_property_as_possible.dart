@@ -1,10 +1,10 @@
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:code_sharp/src/log/log.dart';
-
 import 'package:linter/src/analyzer.dart';
-import 'package:linter/src/util/flutter_utils.dart';
+
+import '/src/utilities/ast_node.dart';
+import '/src/utilities/flutter.dart';
 
 const _desc = r'Use Container property as possible';
 
@@ -59,28 +59,32 @@ class _Visitor extends SimpleAstVisitor {
 
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
-    if (!isExactWidgetTypeContainer(node.staticType)) {
-      return;
-    }
+    if (!flutter.isExactWidgetTypeContainer(node.staticType)) return;
 
-    final child = node.argumentList.arguments.where((arg) => arg is NamedExpression && arg.name.label.name == 'child');
-
-    if (child.isNotEmpty) {
-      final containerChild = child.first.staticType as InterfaceType?;
-      if (containerChild != null) {
-        // TODO(Nomeleel): Util.
-        if ([containerChild, ...containerChild.allSupertypes].any(
-          // TODO(Nomeleel): Align、Padding、etc.
-          (type) => type.getDisplayString(withNullability: false) == 'Align',
-        )) {
-          // TODO(Nomeleel): Only child、alignment param.
-          logger.error('message ${((child.first) as NamedExpression).expression.runtimeType}');
-
-          // TODO(Nomeleel): Util.
-          // rule.reportLint((((child.first) as NamedExpression).expression as InstanceCreationExpression).constructorName);
-          rule.reportLint((((child.first) as NamedExpression).expression as FunctionExpressionInvocation).function);
+    final nodeChildExpression = flutter.findChildArgument(node);
+    if (nodeChildExpression != null) {
+      if (nodeChildExpression.staticType is InterfaceType) {
+        final checker = checkerPropertyMap.keys.firstWhere(
+          (isExactWidgetType) => isExactWidgetType(nodeChildExpression.staticType),
+          orElse: () => null,
+        );
+        if (checker != null) {
+          final childExpression = nodeChildExpression.expression;
+          if (childExpression is InstanceCreationExpression) {
+            // TODO(Nomeleel): Only child、alignment param.
+            // TODO(Nomeleel): Report property in message.
+            rule.reportLint(childExpression.constructorName);
+          } else {
+            // Only report, no fix will be provided.
+            rule.reportLint(getSimpleAstNodeByExpression(childExpression));
+          }
         }
       }
     }
   }
 }
+
+Map checkerPropertyMap = {
+  flutter.isExactWidgetTypeAlign: 'alignment',
+  flutter.isExactWidgetTypeCenter: 'alignment',
+};
