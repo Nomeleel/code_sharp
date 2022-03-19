@@ -6,7 +6,7 @@ import 'package:linter/src/analyzer.dart';
 import '/src/utilities/ast_node.dart';
 import '/src/utilities/flutter.dart';
 
-const _desc = r'Use Container property as possible';
+const _desc = r"Use Container '{0}' property as possible.";
 
 const _details = r'''Use Container property as possible.
 
@@ -69,14 +69,20 @@ class _Visitor extends SimpleAstVisitor {
           orElse: () => null,
         );
         if (checker != null) {
+          final property = checkerPropertyMap[checker];
+          // The property is already set and presumably does not need to rely on repeated application of the child.
+          if (argumentHasExpected(node.argumentList, property)) return;
+          final reportArgs = <String>[property];
           final childExpression = nodeChildExpression.expression;
           if (childExpression is InstanceCreationExpression) {
-            // TODO(Nomeleel): Only child、alignment param.
-            // TODO(Nomeleel): Report property in message.
-            rule.reportLint(childExpression.constructorName);
+            final childArgumentList = childExpression.argumentList;
+            if (everyArgumentInExpectedList(childArgumentList, [property, 'child'])) {
+              final String propertyStr = findExpressionFromArgumentList(childArgumentList, property)?.toString() ?? '';
+              rule.reportLint(childExpression.constructorName, arguments: reportArgs..add(propertyStr));
+            }
           } else {
             // Only report, no fix will be provided.
-            rule.reportLint(getSimpleAstNodeByExpression(childExpression));
+            rule.reportLint(getSimpleAstNodeByExpression(childExpression), arguments: reportArgs);
           }
         }
       }
