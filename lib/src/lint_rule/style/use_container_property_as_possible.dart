@@ -61,6 +61,7 @@ class _Visitor extends SimpleAstVisitor {
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (!flutter.isExactWidgetTypeContainer(node.staticType)) return;
 
+    // TODO(Nomeleel): Margin?
     final nodeChildExpression = flutter.findChildArgument(node);
     if (nodeChildExpression != null) {
       if (nodeChildExpression.staticType is InterfaceType) {
@@ -77,8 +78,8 @@ class _Visitor extends SimpleAstVisitor {
           if (childExpression is InstanceCreationExpression) {
             final childArgumentList = childExpression.argumentList;
             if (everyArgumentInExpectedList(childArgumentList, [property, 'child'])) {
-              final String propertyStr = findExpressionFromArgumentList(childArgumentList, property)?.toString() ?? '';
-              rule.reportLint(childExpression.constructorName, arguments: reportArgs..add(propertyStr));
+              final String? propertyStr = flutter.findNamedArgument(childExpression, property)?.expression.toString();
+              rule.reportLint(childExpression.constructorName, arguments: reportArgs..add(propertyStr ?? ''));
             }
           } else {
             // Only report, no fix will be provided.
@@ -93,4 +94,6 @@ class _Visitor extends SimpleAstVisitor {
 Map checkerPropertyMap = {
   flutter.isExactWidgetTypeAlign: 'alignment',
   flutter.isExactWidgetTypeCenter: 'alignment',
+  flutter.isExactWidgetTypePadding: 'padding',
+  flutter.isExactWidgetTypeTransform: 'transform',
 };

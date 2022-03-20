@@ -24,6 +24,8 @@ class Flutter {
   static const _nameStatelessWidget = 'StatelessWidget';
   static const _nameStreamBuilder = 'StreamBuilder';
   static const _nameWidget = 'Widget';
+  /// Add
+  static const _nameTransform = 'Transform';
 
   final String widgetsUri = 'package:flutter/widgets.dart';
 
@@ -366,6 +368,11 @@ class Flutter {
     return isExactWidgetTypePadding(type);
   }
 
+  /// Return `true` if the [node] is creation of `Transform`.
+  bool isExactlyTransformCreation(InstanceCreationExpression node) {
+    return isExactWidgetTypeTransform(node.staticType);
+  }
+
   /// Return `true` if the given [type] is the Flutter class `StatefulWidget`.
   bool isExactlyStatefulWidgetType(DartType? type) {
     return type is InterfaceType && _isExactWidget(type.element, _nameStatefulWidget, _uriFramework);
@@ -414,6 +421,12 @@ class Flutter {
   /// Return `true` if the given [type] is the Flutter class `StreamBuilder`.
   bool isExactWidgetTypeStreamBuilder(DartType type) {
     return type is InterfaceType && _isExactWidget(type.element, _nameStreamBuilder, _uriAsync);
+  }
+
+  //
+  /// Return `true` if the given [type] is the Flutter class `Transform`.
+  bool isExactWidgetTypeTransform(DartType? type) {
+    return type is InterfaceType && _isExactWidget(type.element, _nameTransform, _uriBasic);
   }
 
   /// Return `true` if the given [type] is the Flutter class `Widget`, or its
