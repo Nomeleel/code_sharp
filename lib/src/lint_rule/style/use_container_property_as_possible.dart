@@ -61,7 +61,6 @@ class _Visitor extends SimpleAstVisitor {
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (!flutter.isExactWidgetTypeContainer(node.staticType)) return;
 
-    // TODO(Nomeleel): Margin?
     final nodeChildExpression = flutter.findChildArgument(node);
     if (nodeChildExpression != null) {
       if (nodeChildExpression.staticType is InterfaceType) {
@@ -78,8 +77,7 @@ class _Visitor extends SimpleAstVisitor {
           if (childExpression is InstanceCreationExpression) {
             final childArgumentList = childExpression.argumentList;
             if (everyArgumentInExpectedList(childArgumentList, [property, 'child'])) {
-              final String? propertyStr = flutter.findNamedArgument(childExpression, property)?.expression.toString();
-              rule.reportLint(childExpression.constructorName, arguments: reportArgs..add(propertyStr ?? ''));
+              _reportCreationConstructor(childExpression, property, reportArgs);
             }
           } else {
             // Only report, no fix will be provided.
@@ -88,6 +86,19 @@ class _Visitor extends SimpleAstVisitor {
         }
       }
     }
+
+    // Margin
+    final nestedOutsideCreation = findAncestorInstanceCreationExpression(node);
+    if (nestedOutsideCreation != null) {
+      if (flutter.isExactlyPaddingCreation(nestedOutsideCreation)) {
+        _reportCreationConstructor(nestedOutsideCreation, 'padding', ['margin']);
+      }
+    }
+  }
+
+  _reportCreationConstructor(InstanceCreationExpression creation, String property, List<String> reportArgs) {
+    final propertyStr = flutter.findNamedArgument(creation, property)?.expression.toString() ?? '';
+    rule.reportLint(creation.constructorName, arguments: reportArgs..add(propertyStr));
   }
 }
 
