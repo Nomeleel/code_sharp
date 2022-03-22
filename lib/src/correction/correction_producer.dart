@@ -1,6 +1,8 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/error/error.dart';
+import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:analyzer_plugin/utilities/change_builder/change_builder_core.dart';
 import 'package:analyzer_plugin/utilities/change_builder/change_builder_dart.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
@@ -13,6 +15,8 @@ abstract class CorrectionProducer {
   AnalysisError? get analysisError => _context.analysisError;
 
   Diagnostic? get diagnostic => _context.diagnostic;
+
+  AstNode get node => _context.node;
 
   FixKind get fixKind;
 
@@ -33,19 +37,24 @@ abstract class DartFileCorrectionProducer extends CorrectionProducer {
 class CorrectionProducerContext {
   CorrectionProducerContext._({
     required this.resolvedResult,
-    this.analysisError,
+    required this.analysisError,
     this.diagnostic,
+    required this.node,
   });
 
   factory CorrectionProducerContext.create({
     required ResolvedUnitResult resolvedResult,
-    AnalysisError? analysisError,
+    required AnalysisError analysisError,
     Diagnostic? diagnostic,
   }) {
+    final errorEnd = analysisError.offset + analysisError.length;
+    final node = NodeLocator(analysisError.offset, errorEnd).searchWithin(resolvedResult.unit) ?? resolvedResult.unit;
+
     return CorrectionProducerContext._(
       resolvedResult: resolvedResult,
       analysisError: analysisError,
       diagnostic: diagnostic,
+      node: node,
     );
   }
 
@@ -57,4 +66,7 @@ class CorrectionProducerContext {
 
   /// diagnostic
   final Diagnostic? diagnostic;
+
+  /// node
+  final AstNode node;
 }
