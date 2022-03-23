@@ -36,8 +36,8 @@ bool argumentHasExpected(ArgumentList argumentList, String expected) {
   });
 }
 
-Expression? findExpressionFromArgumentList(ArgumentList argumentList, String expected) {
-  for (Expression arg in argumentList.arguments) {
-    if (arg is NamedExpression && arg.name.label.name == expected) return arg.expression;
+InstanceCreationExpression? findAncestorInstanceCreationExpression(AstNode node) {
+  if (node is InstanceCreationExpression) {
+    return node.parent?.parent?.parent as InstanceCreationExpression?;
   }
 }
