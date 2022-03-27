@@ -5,8 +5,12 @@ import 'package:analyzer/src/lint/linter.dart';
 import 'package:analyzer/src/lint/registry.dart';
 import 'package:linter/src/analyzer.dart';
 
+import '/src/extension/file_glob_filter_extension.dart';
+
 extension LinterOptionsExtension on LinterOptions {
-  FileGlobFilter get fileFilter => filter as FileGlobFilter;
+  FileGlobFilter? get fileFilter => filter as FileGlobFilter?;
+
+  bool filterPath(String path) => fileFilter?.filterPath(path) ?? false;
 
   /// Focus on enabled lint from rules of config.
   /// [config]: Focus on code_sharp node.

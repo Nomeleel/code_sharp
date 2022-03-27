@@ -8,7 +8,6 @@ import 'package:analyzer/src/ignore_comments/ignore_info.dart';
 import 'package:analyzer/src/lint/analysis.dart';
 import 'package:analyzer/src/lint/io.dart';
 
-import '/src/extension/file_glob_filter_extension.dart';
 import '/src/extension/ignore_info_extension.dart';
 import '/src/extension/lint_rule_extension.dart';
 import '/src/extension/linter_options_extension.dart';
@@ -19,7 +18,7 @@ Future<Iterable<AnalysisError>> analysis(AnalysisDriver driver, ResolvedUnitResu
   if (driver.analysisContext?.contextRoot.isAnalyzed(path) ?? false) {
     final linterOptions = loadLinterOptions(driver);
     // TODO(Nomeleel): Filter as much as possible
-    if (isDartFile(File(path)) && !linterOptions.fileFilter.filterPath(path)) {
+    if (isDartFile(File(path)) && !linterOptions.filterPath(path)) {
       final ignore = Ignore(
         IgnoreInfo.forDart(result.unit, result.content),
         (driver.analysisOptions as AnalysisOptionsImpl).unignorableNames,
