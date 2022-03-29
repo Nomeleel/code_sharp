@@ -77,7 +77,7 @@ class _Visitor extends SimpleAstVisitor {
           if (childExpression is InstanceCreationExpression) {
             final childArgumentList = childExpression.argumentList;
             if (everyArgumentInExpectedList(childArgumentList, [property, 'child'])) {
-              rule.reportLint(childExpression, arguments: reportArgs);
+              rule.reportLint(childExpression.constructorName, arguments: reportArgs);
             }
           } else {
             // Only report, no fix will be provided.
