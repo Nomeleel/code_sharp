@@ -38,6 +38,7 @@ bool argumentHasExpected(ArgumentList argumentList, String expected) {
 
 InstanceCreationExpression? findAncestorInstanceCreationExpression(AstNode node) {
   if (node is InstanceCreationExpression) {
-    return node.parent?.parent?.parent as InstanceCreationExpression?;
+    final greatGrandParent = node.parent?.parent?.parent;
+    if (greatGrandParent is InstanceCreationExpression) return greatGrandParent;
   }
 }
