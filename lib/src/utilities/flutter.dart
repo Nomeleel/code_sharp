@@ -388,6 +388,26 @@ class Flutter {
     return _isExactWidget(element, _nameState, _uriFramework);
   }
 
+  ///
+  /// Return `true` if the given [type] is the Flutter super class name is [name].
+  bool isExactWidgetSuperType(InterfaceType type, String name) {
+    return type.allSupertypes.any((s) => isExactWidgetType(s, name));
+  }
+
+  ///
+  /// Return `true` if the given [type] is the Flutter class or super class name is [name].
+  bool isExactWidgetTypeWithSuper(DartType? type, String name) {
+    return type is InterfaceType
+        ? (_isExactWidget(type.element, name, _uriBasic) ? true : isExactWidgetSuperType(type, name))
+        : false;
+  }
+
+  ///
+  /// Return `true` if the given [type] is the Flutter class name is [name].
+  bool isExactWidgetType(DartType? type, String name) {
+    return type is InterfaceType && _isExactWidget(type.element, name, _uriBasic);
+  }
+
   /// Return `true` if the given [type] is the Flutter class `Align`.
   bool isExactWidgetTypeAlign(DartType? type) {
     return type is InterfaceType && _isExactWidget(type.element, _nameAlign, _uriBasic);
