@@ -2,6 +2,8 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:linter/src/analyzer.dart';
 
+import '/src/utilities/flutter.dart';
+
 const _desc = r"The argument '{0}' equal default({1}) no need set.";
 
 const _details = r'''The argument equal default, so no need set.
@@ -66,10 +68,8 @@ class _Visitor extends SimpleAstVisitor {
   _checkReportLint(ArgumentList argumentList) {
     for (final item in argumentList.arguments) {
       if (item is NamedExpression && (item.element?.hasDefaultValue ?? false)) {
-        // TODO(Nomeleel): const  
-        if (item.element!.defaultValueCode == item.expression.toString().trim()) {
-          // TODO(Nomeleel): arguments  
-          rule.reportLint(item, arguments: ['remove---']);
+        if (flutter.equalIgnoreConst(item.element!.defaultValueCode, item.expression.toString().trim())) {
+          rule.reportLint(item, arguments: [item.name.label, '${item.expression}']);
         }
       }
     }

@@ -24,6 +24,7 @@ class Flutter {
   static const _nameStatelessWidget = 'StatelessWidget';
   static const _nameStreamBuilder = 'StreamBuilder';
   static const _nameWidget = 'Widget';
+
   /// Add
   static const _nameTransform = 'Transform';
 
@@ -567,5 +568,10 @@ class Flutter {
   /// file with the given [uri].
   bool _isExactWidget(ClassElement? element, String type, Uri uri) {
     return element != null && element.name == type && element.source.uri == uri;
+  }
+
+  /// Return `true` if the [a] anb [b] ignore 'const' is equal.
+  bool equalIgnoreConst(String? a, String? b) {
+    return a?.replaceAll('const ', '') .trim() == b?.replaceAll('const ', '') .trim();
   }
 }
