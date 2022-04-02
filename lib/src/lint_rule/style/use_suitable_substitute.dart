@@ -2,6 +2,8 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:linter/src/analyzer.dart';
 
+import '/src/constant/lint_rule_name.dart';
+
 const _desc = r'Use suitable substitute.';
 
 const _details = r''' ''';
@@ -9,7 +11,7 @@ const _details = r''' ''';
 class UseSuitableSubstitute extends LintRule {
   UseSuitableSubstitute()
       : super(
-          name: 'use_suitable_substitute',
+          name: LintRuleName.useSuitableSubstitute,
           description: _desc,
           details: _details,
           group: Group.style,

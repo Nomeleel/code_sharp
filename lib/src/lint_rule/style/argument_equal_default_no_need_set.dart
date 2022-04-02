@@ -2,6 +2,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:linter/src/analyzer.dart';
 
+import '/src/constant/lint_rule_name.dart';
 import '/src/utilities/flutter.dart';
 
 const _desc = r"The argument '{0}' equal default({1}) no need set.";
@@ -35,7 +36,7 @@ Column(
 class ArgumentEqualDefaultNoNeedSet extends LintRule {
   ArgumentEqualDefaultNoNeedSet()
       : super(
-          name: 'argument_equal_default_no_need_set',
+          name: LintRuleName.argumentEqualDefaultNoNeedSet,
           description: _desc,
           details: _details,
           group: Group.style,

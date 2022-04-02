@@ -3,6 +3,7 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:linter/src/analyzer.dart';
 
+import '/src/constant/lint_rule_name.dart';
 import '/src/utilities/ast_node.dart';
 import '/src/utilities/flutter.dart';
 
@@ -38,7 +39,7 @@ Container(
 class UseContainerPropertyAsPossible extends LintRule {
   UseContainerPropertyAsPossible()
       : super(
-          name: 'use_container_property_as_possible',
+          name: LintRuleName.useContainerPropertyAsPossible,
           description: _desc,
           details: _details,
           group: Group.style,
