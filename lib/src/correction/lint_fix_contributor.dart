@@ -4,24 +4,25 @@ import 'package:analyzer_plugin/utilities/change_builder/change_builder_core.dar
 import 'package:analyzer_plugin/utilities/fixes/fix_contributor_mixin.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
 
+import 'correction_map.dart';
 import 'correction_producer.dart';
-import 'lint/replace_container_with_sized_box.dart';
 
 class LintFixContributor extends FixContributor with FixContributorMixin {
   @override
   Future<void> computeFixesForError(AnalysisError error) async {
     if (request == null) return;
-    // TODO(Nomeleel): imp
     if (error.errorCode is LintCode) {
-      if (error.errorCode.name == 'sized_box_for_whitespace_2') {
+      final correctionList = lintCorrectionMap[error.errorCode.name];
+      if (correctionList?.isNotEmpty ?? false) {
         final context = CorrectionProducerContext.create(
           resolvedResult: request!.result,
           analysisError: error,
           diagnostic: error,
         );
 
-        final correctionProducer = ReplaceContainerWithSizedBox();
-        await compute(correctionProducer, context);
+        for (final correction in correctionList!) {
+          await compute(correction, context);
+        }
       }
     }
   }
@@ -34,6 +35,6 @@ class LintFixContributor extends FixContributor with FixContributorMixin {
       // workspace:
     );
     await producer.compute(changeBuilder);
-    addFix(context.analysisError!, producer.fixKind, changeBuilder);
+    addFix(context.analysisError, producer.fixKind, changeBuilder);
   }
 }
