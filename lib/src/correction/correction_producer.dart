@@ -6,13 +6,14 @@ import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:analyzer_plugin/utilities/change_builder/change_builder_core.dart';
 import 'package:analyzer_plugin/utilities/change_builder/change_builder_dart.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
+import 'package:code_sharp/src/log/log.dart';
 
 abstract class CorrectionProducer {
   late CorrectionProducerContext _context;
 
   ResolvedUnitResult get resolvedResult => _context.resolvedResult;
 
-  AnalysisError? get analysisError => _context.analysisError;
+  AnalysisError get analysisError => _context.analysisError;
 
   Diagnostic? get diagnostic => _context.diagnostic;
 
@@ -62,7 +63,7 @@ class CorrectionProducerContext {
   final ResolvedUnitResult resolvedResult;
 
   /// error
-  final AnalysisError? analysisError;
+  final AnalysisError analysisError;
 
   /// diagnostic
   final Diagnostic? diagnostic;
