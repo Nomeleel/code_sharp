@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer_plugin/utilities/change_builder/change_builder_dart.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
 import 'package:analyzer_plugin/utilities/range_factory.dart';
@@ -10,7 +11,12 @@ class RemoveNoNeedExpression extends DartFileCorrectionProducer {
 
   @override
   Future<void> buildFileEdit(DartFileEditBuilder dartFileEditBuilder) async {
-    // TODO(Nomeleel): /n , should remove.
-    dartFileEditBuilder.addDeletion(range.error(analysisError));
+    if (node is NamedExpression) {
+      final parent = node.parent;
+      if (parent is ArgumentList) {
+        final index = parent.arguments.indexWhere((e) => e.offset == analysisError.offset);
+        dartFileEditBuilder.addDeletion(range.argumentRange(parent, index, index, true));
+      }
+    }
   }
 }
