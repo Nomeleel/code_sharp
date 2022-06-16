@@ -6,12 +6,13 @@ import 'dart:io';
 import 'package:analyzer/src/lint/config.dart';
 import 'package:analyzer/src/lint/registry.dart';
 import 'package:args/args.dart';
+import 'package:code_sharp/src/lint_rule/lint_rule.dart';
 import 'package:github/github.dart';
 import 'package:http/http.dart' as http;
 import 'package:linter/src/analyzer.dart';
-import 'package:linter/src/rules.dart';
 import 'package:markdown/markdown.dart';
-
+import 'package:path/path.dart' as path;
+import 'package:yaml/yaml.dart';
 import 'machine.dart';
 import 'since.dart';
 
@@ -29,13 +30,19 @@ void main(List<String> args) async {
     return;
   }
 
-  var outDir = options['out'] as String?;
+  var outDir = options['out'] as String? ?? path.join(Directory.current.path, 'doc');
 
   var token = options['token'];
   var auth = token is String ? Authentication.withToken(token) : null;
 
   await generateDocs(outDir, auth: auth);
 }
+
+const homePage = 'https://github.com/Nomeleel/';
+const repository = 'https://github.com/Nomeleel/code_sharp/';
+const coreLintRules = 'https://github.com/Nomeleel/code_sharp/blob/main/lib/core.yaml';
+const recommendedLintRules = 'https://github.com/Nomeleel/code_sharp/blob/main/lib/recommended.yaml';
+const flutterLintRules = 'https://github.com/Nomeleel/code_sharp/blob/main/lib/flutter.yaml';
 
 const ruleFootMatter = '''
 In addition, rules can be further distinguished by *maturity*.  Unqualified
@@ -55,26 +62,23 @@ enabled in practice, but this list should provide a convenient jumping-off point
 
 Many lints are included in various predefined rulesets:
 
-* [core](https://github.com/dart-lang/lints) for official "core" Dart team lint rules.
-* [recommended](https://github.com/dart-lang/lints) for additional lint rules "recommended" by the Dart team.
-* [flutter](https://github.com/flutter/packages/blob/master/packages/flutter_lints/lib/flutter.yaml) for rules recommended for Flutter projects (`flutter create` enables these by default).
+* [core]($coreLintRules) for official "core" Dart team lint rules.
+* [recommended]($recommendedLintRules) for additional lint rules "recommended" by the Dart team.
+* [flutter]($flutterLintRules) for rules recommended for Flutter projects (`flutter create` enables these by default).
 
 Rules included in these rulesets are badged in the documentation below.
 
 These rules are under active development.  Feedback is
-[welcome](https://github.com/dart-lang/linter/issues)!
+[welcome](https://github.com/Nomeleel/code_sharp/issues)!
 ''';
 
 const ruleLeadMatter = 'Rules are organized into familiar rule groups.';
 
 final coreRules = <String?>[];
 final flutterRules = <String?>[];
-final pedanticRules = <String?>[];
 final recommendedRules = <String?>[];
 
-/// Sorted list of contributed lint rules.
-final List<LintRule> rules =
-    List<LintRule>.of(Registry.ruleRegistry, growable: false)..sort();
+late final List<LintRule> rules;
 
 late Map<String, SinceInfo> sinceInfo;
 
@@ -92,30 +96,18 @@ String get enumeratePubRules =>
 String get enumerateStyleRules =>
     rules.where((r) => r.group == Group.style).map(toDescription).join('\n\n');
 
-Future<String> get pedanticLatestVersion async {
-  var url =
-      'https://raw.githubusercontent.com/dart-lang/pedantic/master/lib/analysis_options.yaml';
-  var client = http.Client();
-  print('loading $url...');
-  var req = await client.get(Uri.parse(url));
-  var parts = req.body.split('package:pedantic/analysis_options.');
-  return parts[1].split('.yaml')[0];
-}
-
 String describeMaturity(LintRule r) =>
     r.maturity == Maturity.stable ? '' : ' (${r.maturity.name})';
 
 Future<void> fetchBadgeInfo() async {
-  var core = await fetchConfig(
-      'https://raw.githubusercontent.com/dart-lang/lints/master/lib/core.yaml');
+  var core = await getLibConfig('core.yaml');
   if (core != null) {
     for (var ruleConfig in core.ruleConfigs) {
       coreRules.add(ruleConfig.name);
     }
   }
 
-  var recommended = await fetchConfig(
-      'https://raw.githubusercontent.com/dart-lang/lints/master/lib/recommended.yaml');
+  var recommended = await getLibConfig('recommended.yaml');
   if (recommended != null) {
     recommendedRules.addAll(coreRules);
     for (var ruleConfig in recommended.ruleConfigs) {
@@ -123,17 +115,7 @@ Future<void> fetchBadgeInfo() async {
     }
   }
 
-  var latestPedantic = await pedanticLatestVersion;
-  var pedantic = await fetchConfig(
-      'https://raw.githubusercontent.com/dart-lang/pedantic/master/lib/analysis_options.$latestPedantic.yaml');
-  if (pedantic != null) {
-    for (var ruleConfig in pedantic.ruleConfigs) {
-      pedanticRules.add(ruleConfig.name);
-    }
-  }
-
-  var flutter = await fetchConfig(
-      'https://raw.githubusercontent.com/flutter/packages/master/packages/flutter_lints/lib/flutter.yaml');
+  var flutter = await getLibConfig('flutter.yaml');
   if (flutter != null) {
     flutterRules.addAll(recommendedRules);
     for (var ruleConfig in flutter.ruleConfigs) {
@@ -149,9 +131,23 @@ Future<LintConfig?> fetchConfig(String url) async {
   return processAnalysisOptionsFile(req.body);
 }
 
+Future<LintConfig?> getLibConfig(String file) async {
+  final content = await File(path.join(Directory.current.path, 'lib', file)).readAsString();
+  final yaml = loadYamlNode(content);
+  if (yaml is YamlMap) {
+    final options = yaml['code_sharp'];
+    if (options is YamlMap) {
+      return LintConfig.parseMap(options);
+    }
+  }
+  return null;
+}
+
 Future<void> fetchSinceInfo(Authentication? auth) async {
   sinceInfo = await getSinceMap(auth);
 }
+
+void createDirectorySync(Directory directory) => directory.existsSync() ? null : directory.createSync();
 
 Future<void> generateDocs(String? dir, {Authentication? auth}) async {
   var outDir = dir;
@@ -163,13 +159,15 @@ Future<void> generateDocs(String? dir, {Authentication? auth}) async {
     }
     if (!File('$outDir/options').existsSync()) {
       var lintsChildDir = Directory('$outDir/lints');
-      if (lintsChildDir.existsSync()) {
-        outDir = lintsChildDir.path;
-      }
+      createDirectorySync(lintsChildDir);
+      outDir = lintsChildDir.path;
     }
   }
 
   registerLintRules();
+
+  /// Sorted list of contributed lint rules.
+  rules = List<LintRule>.of(Registry.ruleRegistry, growable: false)..sort();
 
   // Generate lint count badge.
   await CountBadger(Registry.ruleRegistry).generate(outDir);
@@ -201,23 +199,18 @@ String getBadges(String rule) {
   var sb = StringBuffer();
   if (coreRules.contains(rule)) {
     sb.write(
-        '<a class="style-type" href="https://github.com/dart-lang/lints/blob/main/lib/core.yaml">'
+        '<a class="style-type" href="$coreLintRules">'
         '<!--suppress HtmlUnknownTarget --><img alt="core" src="style-core.svg"></a>');
   }
   if (recommendedRules.contains(rule)) {
     sb.write(
-        '<a class="style-type" href="https://github.com/dart-lang/lints/blob/main/lib/recommended.yaml">'
+        '<a class="style-type" href="$recommendedLintRules">'
         '<!--suppress HtmlUnknownTarget --><img alt="recommended" src="style-recommended.svg"></a>');
   }
   if (flutterRules.contains(rule)) {
     sb.write(
-        '<a class="style-type" href="https://github.com/flutter/packages/blob/master/packages/flutter_lints/lib/flutter.yaml">'
+        '<a class="style-type" href="$flutterLintRules">'
         '<!--suppress HtmlUnknownTarget --><img alt="flutter" src="style-flutter.svg"></a>');
-  }
-  if (pedanticRules.contains(rule)) {
-    sb.write(
-        '<a class="style-type" href="https://github.com/dart-lang/pedantic/#enabled-lints">'
-        '<!--suppress HtmlUnknownTarget --><img alt="pedantic" src="style-pedantic.svg"></a>');
   }
   return sb.toString();
 }
@@ -322,8 +315,8 @@ class HtmlIndexer {
          </section>
       </div>
       <footer>
-         <p>Maintained by the <a href="https://dart.dev/">Dart Team</a></p>
-         <p>Visit us on <a href="https://github.com/dart-lang/linter">GitHub</a></p>
+         <p>Maintained by the <a href="$homePage">Nomeleel</a></p>
+         <p>Visit us on <a href="$repository">GitHub</a></p>
       </footer>
    </body>
 </html>
@@ -338,7 +331,9 @@ class MachineSummaryGenerator {
   void generate(String? filePath) {
     var generated = getMachineListing(rules);
     if (filePath != null) {
-      var outPath = '$filePath/machine/rules.json';
+      final machineDir = Directory('$filePath/machine');
+      createDirectorySync(machineDir);
+      var outPath = '${machineDir.path}/rules.json';
       print('Writing to $outPath');
       File(outPath).writeAsStringSync(generated);
     } else {
@@ -381,21 +376,13 @@ class MarkdownIndexer {
       buffer
           .writeln('**[${rule.name}](${rule.name}.md)** - ${rule.description}');
       if (coreRules.contains(rule.name)) {
-        buffer.writeln('[![core](style-core.svg)]'
-            '(https://github.com/dart-lang/lints/blob/main/lib/core.yaml)');
+        buffer.writeln('[![core](style-core.svg)]($coreLintRules)');
       }
       if (recommendedRules.contains(rule.name)) {
-        buffer.writeln('[![recommended](style-recommended.svg)]'
-            '(https://github.com/dart-lang/lints/blob/main/lib/recommended.yaml)');
+        buffer.writeln('[![recommended](style-recommended.svg)]($recommendedLintRules)');
       }
       if (flutterRules.contains(rule.name)) {
-        buffer.writeln('[![flutter](style-flutter.svg)]'
-            '(https://github.com/flutter/packages/blob/master/packages/'
-            'flutter_lints/lib/flutter.yaml)');
-      }
-      if (pedanticRules.contains(rule.name)) {
-        buffer.writeln('[![pedantic](style-pedantic.svg)]'
-            '(https://github.com/dart-lang/pedantic/#enabled-lints)');
+        buffer.writeln('[![flutter](style-flutter.svg)]($flutterLintRules)');
       }
       buffer.writeln();
     }
@@ -437,7 +424,9 @@ class OptionsSample {
   void generate(String? filePath) {
     var generated = _generate();
     if (filePath != null) {
-      var outPath = '$filePath/options/options.html';
+      final optionsDir = Directory('$filePath/options');
+      createDirectorySync(optionsDir);
+      var outPath = '${optionsDir.path}/options.html';
       print('Writing to $outPath');
       File(outPath).writeAsStringSync(generated);
     } else {
@@ -506,8 +495,8 @@ linter:
          </section>
       </div>
       <footer>
-         <p>Maintained by the <a href="https://dart.dev/">Dart Team</a></p>
-         <p>Visit us on <a href="https://github.com/dart-lang/linter">GitHub</a></p>
+         <p>Maintained by the <a href="$homePage">Nomeleel</a></p>
+         <p>Visit us on <a href="$repository">GitHub</a></p>
       </footer>
    </body>
 </html>
@@ -617,8 +606,8 @@ class RuleHtmlGenerator {
          </section>
       </div>
       <footer>
-         <p>Maintained by the <a href="https://dart.dev/">Dart Team</a></p>
-         <p>Visit us on <a href="https://github.com/dart-lang/linter">GitHub</a></p>
+         <p>Maintained by the <a href="$homePage">Nomeleel</a></p>
+         <p>Visit us on <a href="$repository">GitHub</a></p>
       </footer>
    </body>
 </html>
@@ -660,21 +649,13 @@ class RuleMarkdownGenerator {
 
     // badges
     if (coreRules.contains(name)) {
-      buffer.writeln('[![core](style-core.svg)]'
-          '(https://github.com/dart-lang/lints/blob/main/lib/core.yaml)');
+      buffer.writeln('[![core](style-core.svg)]($coreLintRules)');
     }
     if (recommendedRules.contains(name)) {
-      buffer.writeln('[![recommended](style-flutter.svg)]'
-          'https://github.com/dart-lang/lints/blob/main/lib/recommended.yaml)');
+      buffer.writeln('[![recommended](style-flutter.svg)]($recommendedLintRules)');
     }
     if (flutterRules.contains(name)) {
-      buffer.writeln('[![flutter](style-flutter.svg)]'
-          '(https://github.com/flutter/packages/blob/master/packages/'
-          'flutter_lints/lib/flutter.yaml)');
-    }
-    if (pedanticRules.contains(name)) {
-      buffer.writeln('[![pedantic](style-pedantic.svg)]'
-          '(https://github.com/dart-lang/pedantic/#enabled-lints)');
+      buffer.writeln('[![flutter](style-flutter.svg)]($flutterLintRules)');
     }
 
     buffer.writeln();
