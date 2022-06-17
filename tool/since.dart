@@ -83,15 +83,13 @@ Future<Map<String, SinceInfo>> _getSinceInfo(Authentication? auth) async {
     var linterVersion = linterVersionCache[lint] as String?;
     if (linterVersion == null) {
       // linterVersion = await findSinceLinter(lint, auth: auth);
-      linterVersion = '1.0.0';
-      if (linterVersion != null) {
-        print('fetched...');
-        print('$lint : $linterVersion');
-        print('(consider caching in tool/since/linter.yaml)');
-      }
+      linterVersion = '0.0.1';
+      print('fetched...');
+      print('$lint : $linterVersion');
+      print('(consider caching in tool/since/linter.yaml)');
     }
     sinceMap[lint] = SinceInfo(
-      sinceLinter: linterVersion ?? await findSinceLinter(lint),
+      sinceLinter: linterVersion,
       // See: https://github.com/dart-lang/linter/issues/2824
       //sinceDartSdk: await _sinceSdkForLinter(linterVersion, auth),
     );

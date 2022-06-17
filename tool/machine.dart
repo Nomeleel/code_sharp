@@ -44,7 +44,6 @@ String getMachineListing(Iterable<LintRule> ruleRegistry,
           if (coreRules.contains(rule.name)) 'core',
           if (recommendedRules.contains(rule.name)) 'recommended',
           if (flutterRules.contains(rule.name)) 'flutter',
-          if (pedanticRules.contains(rule.name)) 'pedantic',
         ],
         'details': rule.details,
       }

@@ -153,10 +153,7 @@ Future<void> generateDocs(String? dir, {Authentication? auth}) async {
   var outDir = dir;
   if (outDir != null) {
     var d = Directory(outDir);
-    if (!d.existsSync()) {
-      print("Directory '${d.path}' does not exist");
-      return;
-    }
+    createDirectorySync(d);
     if (!File('$outDir/options').existsSync()) {
       var lintsChildDir = Directory('$outDir/lints');
       createDirectorySync(lintsChildDir);

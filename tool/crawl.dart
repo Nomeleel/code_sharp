@@ -4,10 +4,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/src/lint/registry.dart';
+import 'package:code_sharp/src/lint_rule/lint_rule.dart';
 import 'package:github/github.dart';
 import 'package:http/http.dart' as http;
 import 'package:linter/src/analyzer.dart';
-import 'package:linter/src/rules.dart';
 import 'package:linter/src/util/score_utils.dart' as score_utils;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
