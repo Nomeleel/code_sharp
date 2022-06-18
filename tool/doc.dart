@@ -271,13 +271,13 @@ class HtmlIndexer {
       <meta name="mobile-web-app-capable" content="yes">
       <meta name="apple-mobile-web-app-capable" content="yes">
       <link rel="stylesheet" href="../styles.css">
-      <title>Linter for Dart</title>
+      <title>Code Sharp Linter for Dart</title>
    </head>
    <body>
       <div class="wrapper">
          <header>
             <a href="../index.html">
-               <h1>Linter for Dart</h1>
+               <h1>Code Sharp Linter for Dart</h1>
             </a>
             <p>Lint Rules</p>
             <ul>
@@ -347,7 +347,7 @@ class MarkdownIndexer {
   void generate({String? filePath}) {
     var buffer = StringBuffer();
 
-    buffer.writeln('# Linter for Dart');
+    buffer.writeln('# Code Sharp Linter for Dart');
     buffer.writeln();
     buffer.writeln('## Lint Rules');
     buffer.writeln();
@@ -434,7 +434,7 @@ class OptionsSample {
   String generateOptions() {
     var sb = StringBuffer('''
 ```
-linter:
+code_sharp:
   rules:
 ''');
 
@@ -467,7 +467,7 @@ linter:
       <div class="wrapper">
          <header>
             <a href="../../index.html">
-               <h1>Linter for Dart</h1>
+               <h1>Code Sharp Linter for Dart</h1>
             </a>
             <p>Analysis Options</p>
             <ul>
@@ -552,7 +552,7 @@ class RuleHtmlGenerator {
     //     ? '>= ${info.sinceDartSdk}'
     //     : '<strong>unreleased</strong>';
     //return 'Dart SDK: $version • <small>(Linter v${info.sinceLinter})</small>';
-    return 'Linter v${info.sinceLinter}';
+    return 'Code Sharp v${info.sinceLinter}';
   }
 
   void generate([String? filePath]) {
@@ -631,7 +631,7 @@ class RuleMarkdownGenerator {
     //     ? '>= ${info.sinceDartSdk}'
     //     : '**unreleased**';
     // return 'Dart SDK: $version • (Linter v${info.sinceLinter})';
-    return 'Linter v${info.sinceLinter}';
+    return 'Code Sharp v${info.sinceLinter}';
   }
 
   void generate({String? filePath}) {
@@ -649,7 +649,7 @@ class RuleMarkdownGenerator {
       buffer.writeln('[![core](style-core.svg)]($coreLintRules)');
     }
     if (recommendedRules.contains(name)) {
-      buffer.writeln('[![recommended](style-flutter.svg)]($recommendedLintRules)');
+      buffer.writeln('[![recommended](style-recommended.svg)]($recommendedLintRules)');
     }
     if (flutterRules.contains(name)) {
       buffer.writeln('[![flutter](style-flutter.svg)]($flutterLintRules)');
