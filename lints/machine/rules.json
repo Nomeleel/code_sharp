@@ -1,0 +1,24 @@
+[
+  {
+    "name": "argument_equal_default_no_need_set",
+    "description": "The argument '{0}' equal default({1}) no need set.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [
+      "flutter"
+    ],
+    "details": "The argument equal default, so no need set.\n\n**BAD:**\n```dart\nColumn(\n  mainAxisAlignment: MainAxisAlignment.start,\n  mainAxisSize: MainAxisSize.max,\n  crossAxisAlignment: CrossAxisAlignment.center,\n  children: <Widget>[\n    FlutterLogo(),\n    FlutterLogo(),\n  ]\n)\n```\n\n**GOOD:**\n```dart\nColumn(\n  children: <Widget>[\n    FlutterLogo(),\n    FlutterLogo(),\n  ]\n)\n```\n"
+  },
+  {
+    "name": "use_container_property_as_possible",
+    "description": "Use Container '{0}' property as possible.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [
+      "flutter"
+    ],
+    "details": "Use Container property as possible.\n\nA `Container` is combined common painting, positioning, and sizing widgets, \nso his 'child' can use its properties directly.\n\n**BAD:**\n```dart\nContainer(\n  height: 77.0,\n  width: 77.0,\n  child: Center(\n    child: FlutterLogo(),\n  ),\n)\n```\n\n**GOOD:**\n```dart\nContainer(\n  height: 77.0,\n  width: 77.0,\n  alignment: Alignment.center,\n  child: FlutterLogo(),\n)\n```\n"
+  }
+]
