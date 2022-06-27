@@ -13,6 +13,7 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer_plugin/utilities/analyzer_converter.dart';
 import 'package:analyzer_plugin/utilities/fixes/fixes.dart';
 
+import '../constant/code_sharp.dart';
 import '/src/analyzer/analyzer.dart';
 import '/src/correction/lint_fix_contributor.dart';
 import '/src/lint_rule/lint_rule.dart';
@@ -79,7 +80,7 @@ class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMix
               (await analysis(driver, result)).toList(),
               lineInfo: result.lineInfo,
               options: driver.analysisOptions,
-            ));
+            )..forEach(_converAddDocUrl));
           }
           channel.sendNotification(AnalysisErrorsParams(result.path, errors).toNotification());
         } catch (e, stackTrace) {
@@ -88,6 +89,8 @@ class AnalyzerPlugin extends ServerPlugin with SeasonableAnalysisMixin, FixesMix
       }
     });
   }
+
+  AnalysisError _converAddDocUrl(AnalysisError error) => error..url = '${CodeSharp.lintWebsite}${error.code}';
 
   @override
   Future<ResolvedUnitResult> getResolvedUnitResult(String path) async {
