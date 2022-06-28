@@ -4,4 +4,6 @@ class LintRuleName {
   static const String argumentEqualDefaultNoNeedSet = 'argument_equal_default_no_need_set';
 
   static const String useSuitableSubstitute = 'use_suitable_substitute';
+
+  static const String preferSwitchCase = 'prefer_switch_case';
 }

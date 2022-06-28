@@ -1,0 +1,5 @@
+include: package:code_sharp/core.yaml
+
+code_sharp:
+  rules:
+     - prefer_switch_case
