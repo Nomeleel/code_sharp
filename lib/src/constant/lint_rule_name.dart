@@ -6,4 +6,6 @@ class LintRuleName {
   static const String useSuitableSubstitute = 'use_suitable_substitute';
 
   static const String preferSwitchCase = 'prefer_switch_case';
+
+  static const String preferMethodNotUseCalls = 'prefer_method_not_use_calls';
 }

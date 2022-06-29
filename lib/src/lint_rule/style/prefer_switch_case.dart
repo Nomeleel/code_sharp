@@ -14,15 +14,15 @@ const _details = r'''Prefer switch case instead of multiple if else processes.
 
 void action(int code) {
   if (code == 0) {
-    // doSomeing();
+    // doSomething();
   } else if (code == 1) {
-    // doSomeing()
+    // doSomething()
   } else if (code == 2) {
-    // doSomeing()
+    // doSomething()
   } else if (code == 3) {
-    // doSomeing()
+    // doSomething()
   } else {
-    // doSomeing()
+    // doSomething()
   }
 }
 
@@ -33,19 +33,19 @@ void action(int code) {
 void action(int code) {
   switch (code) {
     case 0:
-      // doSomeing();
+      // doSomething();
       break;
     case 1:
-      // doSomeing();
+      // doSomething();
       break;
     case 2:
-      // doSomeing();
+      // doSomething();
       break;
     case 3:
-      // doSomeing();
+      // doSomething();
       break;
     default:
-    // doSomeing();
+    // doSomething();
   }
 }
 ```
