@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <link rel="shortcut icon" href="../dart-192.png">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+      <meta name="mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <title>prefer_builder_constructor_for_widget</title>
+      <link rel="stylesheet" href="../styles.css">
+   </head>
+   <body>
+      <div class="wrapper">
+         <header>
+            <h1>prefer_builder_constructor_for_widget</h1>
+            <p>Group: style</p>
+            <p>Maturity: stable</p>
+            <div class="tooltip">
+               <p>Code Sharp v0.0.1</p>
+               <span class="tooltip-content">Since info is static, may be stale</span>
+            </div>
+            
+            <ul>
+               <li><a href="index.html">View all <strong>Lint Rules</strong></a></li>
+               <li><a href="https://dart.dev/guides/language/analysis-options#enabling-linter-rules">Using the <strong>Linter</strong></a></li>
+            </ul>
+            <p><a class="overflow-link" href="index.html">View all <strong>Lint Rules</strong></a></p>
+            <p><a class="overflow-link" href="https://dart.dev/guides/language/analysis-options#enabling-linter-rules">Using the <strong>Linter</strong></a></p>
+         </header>
+         <section>
+
+            <p>Usually the builder constructor supports lazy loading.
+This constructor is appropriate for multiple children views with a large (or infinite) number of children because the builder is called only for those children that are actually visible.</p>
+<p><strong>BAD:</strong></p>
+<pre><code class="language-dart">
+ListView(
+  children: List.generate(10000, (index) =&gt; Text('$index')),
+)
+
+</code></pre>
+<p><strong>GOOD:</strong></p>
+<pre><code class="language-dart">
+final children = List.generate(10000, (index) =&gt; Text('$index'));
+ListView.builder(
+  itemCount: children.length,
+  itemBuilder: (context, index) =&gt; children[index],
+)
+
+</code></pre>
+
+            
+         </section>
+      </div>
+      <footer>
+         <p>Maintained by the <a href="https://github.com/Nomeleel/">Nomeleel</a></p>
+         <p>Visit us on <a href="https://github.com/Nomeleel/code_sharp/">GitHub</a></p>
+      </footer>
+   </body>
+</html>

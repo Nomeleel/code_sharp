@@ -11,6 +11,51 @@
     "details": "The argument equal default, so no need set.\n\n**BAD:**\n```dart\nColumn(\n  mainAxisAlignment: MainAxisAlignment.start,\n  mainAxisSize: MainAxisSize.max,\n  crossAxisAlignment: CrossAxisAlignment.center,\n  children: <Widget>[\n    FlutterLogo(),\n    FlutterLogo(),\n  ]\n)\n```\n\n**GOOD:**\n```dart\nColumn(\n  children: <Widget>[\n    FlutterLogo(),\n    FlutterLogo(),\n  ]\n)\n```\n"
   },
   {
+    "name": "prefer_builder_constructor_for_widget",
+    "description": "Prefer use {0}.builder constructor.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [],
+    "details": "\nUsually the builder constructor supports lazy loading.\nThis constructor is appropriate for multiple children views with a large (or infinite) number of children because the builder is called only for those children that are actually visible.\n\n**BAD:**\n```dart\n\nListView(\n  children: List.generate(10000, (index) => Text('$index')),\n)\n\n```\n\n**GOOD:**\n```dart\n\nfinal children = List.generate(10000, (index) => Text('$index'));\nListView.builder(\n  itemCount: children.length,\n  itemBuilder: (context, index) => children[index],\n)\n\n```\n\n"
+  },
+  {
+    "name": "prefer_if_null_operators_with_default_bool",
+    "description": "Prefer using if null operators with default bool value.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [
+      "recommended",
+      "flutter"
+    ],
+    "details": "\nPrefer using if null operators with default bool value instead of null checks in conditional\nexpressions.\n\n**BAD:**\n```dart\n\nfinal isEmpty = a == null ? true : a.isEmpty();\n\n```\n\n**GOOD:**\n```dart\n\nfinal isEmpty = a?.isEmpty() ?? true;\n\n```\n\n"
+  },
+  {
+    "name": "prefer_method_not_use_calls",
+    "description": "Prefer method direct calls instead of call calls.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [
+      "recommended",
+      "flutter"
+    ],
+    "details": "Prefer method direct calls instead of call calls.\n\n**BAD:**\n```dart\n\nvoid fun() {}\n\nvoid doSomething() {\n  fun.call();\n}\n\n```\n\n**GOOD:**\n```dart\n\nvoid fun() {}\n\nvoid doSomething({VoidCallback? callback}) {\n  fun();\n  callback?.call();\n}\n\n```\n"
+  },
+  {
+    "name": "prefer_switch_case",
+    "description": "Prefer switch case instead of multiple if else processes.",
+    "group": "style",
+    "maturity": "stable",
+    "incompatible": [],
+    "sets": [
+      "recommended",
+      "flutter"
+    ],
+    "details": "Prefer switch case instead of multiple if else processes.\n\n**BAD:**\n```dart\n\nvoid action(int code) {\n  if (code == 0) {\n    // doSomething();\n  } else if (code == 1) {\n    // doSomething()\n  } else if (code == 2) {\n    // doSomething()\n  } else if (code == 3) {\n    // doSomething()\n  } else {\n    // doSomething()\n  }\n}\n\n```\n\n**GOOD:**\n```dart\nvoid action(int code) {\n  switch (code) {\n    case 0:\n      // doSomething();\n      break;\n    case 1:\n      // doSomething();\n      break;\n    case 2:\n      // doSomething();\n      break;\n    case 3:\n      // doSomething();\n      break;\n    default:\n    // doSomething();\n  }\n}\n```\n"
+  },
+  {
     "name": "use_container_property_as_possible",
     "description": "Use Container '{0}' property as possible.",
     "group": "style",

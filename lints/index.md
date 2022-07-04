@@ -53,5 +53,19 @@ These rules are under active development.  Feedback is
 **[argument_equal_default_no_need_set](argument_equal_default_no_need_set.md)** - The argument '{0}' equal default({1}) no need set.
 [![flutter](style-flutter.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/flutter.yaml)
 
+**[prefer_switch_case](prefer_switch_case.md)** - Prefer switch case instead of multiple if else processes.
+[![recommended](style-recommended.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/recommended.yaml)
+[![flutter](style-flutter.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/flutter.yaml)
+
+**[prefer_method_not_use_calls](prefer_method_not_use_calls.md)** - Prefer method direct calls instead of call calls.
+[![recommended](style-recommended.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/recommended.yaml)
+[![flutter](style-flutter.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/flutter.yaml)
+
+**[prefer_builder_constructor_for_widget](prefer_builder_constructor_for_widget.md)** - Prefer use {0}.builder constructor.
+
+**[prefer_if_null_operators_with_default_bool](prefer_if_null_operators_with_default_bool.md)** - Prefer using if null operators with default bool value.
+[![recommended](style-recommended.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/recommended.yaml)
+[![flutter](style-flutter.svg)](https://github.com/Nomeleel/code_sharp/blob/main/lib/flutter.yaml)
+
 ## Pub Rules
 
