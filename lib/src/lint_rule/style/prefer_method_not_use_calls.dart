@@ -58,7 +58,9 @@ class _Visitor extends SimpleAstVisitor {
   @override
   void visitMethodInvocation(MethodInvocation node) {
     if (node.target?.staticType is FunctionType && node.function.toString() == 'call' && !node.isNullAware) {
-      rule.reportLint(node.function);
+      _reportCallsWithDot(node.function);
     }
   }
+
+  void _reportCallsWithDot(AstNode node) => rule.reportLintForOffset(node.offset - 1, node.length + 1);
 }
