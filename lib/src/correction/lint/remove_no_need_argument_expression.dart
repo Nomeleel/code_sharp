@@ -5,9 +5,9 @@ import 'package:analyzer_plugin/utilities/range_factory.dart';
 
 import '/src/correction/correction_producer.dart';
 
-class RemoveNoNeedExpression extends DartFileCorrectionProducer {
+class RemoveNoNeedArgumentExpression extends DartFileCorrectionProducer {
   @override
-  FixKind get fixKind => FixKind('dart.fix.remove.noNeedExpression', 50, "Remove no need expression");
+  FixKind get fixKind => FixKind('dart.fix.remove.noNeedArgumentExpression', 50, 'Remove no need argument expression');
 
   @override
   Future<void> buildFileEdit(DartFileEditBuilder dartFileEditBuilder) async {
