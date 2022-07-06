@@ -3,3 +3,5 @@ include: package:code_sharp/core.yaml
 code_sharp:
   rules:
      - prefer_switch_case
+     - prefer_method_not_use_calls
+     - prefer_if_null_operators_with_default_bool

@@ -1,2 +1,6 @@
 use_container_property_as_possible: 0.0.1
 argument_equal_default_no_need_set: 0.0.1
+prefer_switch_case: 0.0.1
+prefer_method_not_use_calls: 0.0.1
+prefer_builder_constructor_for_widget: 0.0.1
+prefer_builder_creation_for_widget: 0.0.1

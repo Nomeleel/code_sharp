@@ -4,3 +4,4 @@ code_sharp:
   rules:
      - use_container_property_as_possible
      - argument_equal_default_no_need_set
+     - prefer_builder_creation_for_widget
