@@ -44,6 +44,7 @@ class PreferIfNullOperatorsWithDefaultBool extends LintRule {
     var visitor = _Visitor(this);
 
     registry.addConditionalExpression(this, visitor);
+    registry.addIfStatement(this, visitor);
   }
 }
 
@@ -69,7 +70,7 @@ class _Visitor extends SimpleAstVisitor {
         Expression? exp;
         if (condition.operator.type == TokenType.EQ_EQ) {
           exp = node.elseExpression;
-        } else if (condition.operator.type == TokenType.EQ_EQ) {
+        } else if (condition.operator.type == TokenType.BANG_EQ) {
           exp = node.thenExpression;
         } else {
           return;
@@ -88,6 +89,40 @@ class _Visitor extends SimpleAstVisitor {
             return;
           }
         }
+      }
+    }
+  }
+
+  @override
+  void visitIfStatement(IfStatement node) {
+    final nullExpList = [];
+    final expList = [];
+
+    void collect(Expression node) {
+      if (node is BinaryExpression) {
+        switch (node.operator.type) {
+          case TokenType.BAR_BAR:
+          case TokenType.AMPERSAND_AMPERSAND:
+            collect(node.leftOperand);
+            collect(node.rightOperand);
+            break;
+          case TokenType.BANG_EQ:
+          case TokenType.EQ_EQ:
+            if (node.leftOperand is NullLiteral) nullExpList.add(node.rightOperand);
+            if (node.rightOperand is NullLiteral) nullExpList.add(node.leftOperand);
+            break;
+          default:
+        }
+      } else {
+        expList.add(node);
+      }
+    }
+
+    collect(node.condition);
+
+    if (nullExpList.isNotEmpty && expList.isNotEmpty) {
+      if (nullExpList.any((nullExp) => expList.any((exp) => exp.toString().startsWith(nullExp.toString())))) {
+        rule.reportLint(node.condition);
       }
     }
   }
