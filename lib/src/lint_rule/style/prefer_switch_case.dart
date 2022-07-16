@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/ast/syntactic_entity.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:linter/src/analyzer.dart';
 
@@ -77,22 +77,39 @@ class _Visitor extends SimpleAstVisitor {
 
   @override
   void visitIfStatement(IfStatement node) {
+    // 取最长的表达式, 忽略sub表达式
+    if (node.parent is IfStatement) return;
+
     int elseStatementCount = 0;
     Statement? elseStatement = node.elseStatement;
-    Iterable<SyntacticEntity> childEntities = node.condition.childEntities;
+    Expression condition = node.condition;
 
-    while (elseStatement is IfStatement && _conditionSimilar(childEntities, elseStatement.condition.childEntities)) {
-      elseStatementCount++;
-      if (elseStatementCount >= maxIfStatementCount) {
-        return rule.reportLint(node);
-      } else {
-        childEntities = elseStatement.condition.childEntities;
+    while (elseStatement is IfStatement) {
+      if (_conditionSimilar(condition, elseStatement.condition)) {
+        elseStatementCount++;
+        condition = elseStatement.condition;
         elseStatement = elseStatement.elseStatement;
+      } else {
+        return;
       }
     }
+
+    if (elseStatementCount >= maxIfStatementCount) return rule.reportLint(node);
   }
 
-  // TODO(Nomeleel): Current simple check, todo imp.
-  bool _conditionSimilar(Iterable<SyntacticEntity> a, Iterable<SyntacticEntity> b) =>
-      a.first.toString() == b.first.toString();
+  bool _conditionSimilar(Expression a, Expression b) {
+    if (a.runtimeType == b.runtimeType && a.childEntities.length == 3 && b.childEntities.length == 3) {
+      final aEntities = a.childEntities.toList(), bEntities = b.childEntities.toList();
+
+      final aToken = aEntities.removeAt(1), bToken = bEntities.removeAt(1);
+      if (_toStringEqual(aToken, bToken) &&
+          aToken is Token &&
+          (aToken.type == TokenType.EQ_EQ || aToken.type == Keyword.IS)) {
+        return aEntities.any((ea) => bEntities.any(((eb) => _toStringEqual(ea, eb))));
+      }
+    }
+    return false;
+  }
+
+  bool _toStringEqual(a, b) => '$a' == '$b';
 }
