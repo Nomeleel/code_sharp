@@ -12,4 +12,6 @@ class LintRuleName {
   static const String preferBuilderConstructorForWidget = 'prefer_builder_constructor_for_widget';
 
   static const String preferIfNullOperatorsWithDefaultBool = 'prefer_if_null_operators_with_default_bool';
+
+  static const String unnecessaryImport = 'unnecessary_import';
 }
