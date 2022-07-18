@@ -1,3 +1,7 @@
+// Same as the official provided diagnostic, this lint will be removed.
+// https://dart.dev/tools/diagnostic-messages?utm_source=dartdev&utm_medium=redir&utm_id=diagcode&utm_content=unnecessary_import#unnecessary_import
+// https://github.com/dart-lang/sdk/blob/main/pkg/analyzer/lib/src/error/imports_verifier.dart#L688
+
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
 import 'package:analyzer/dart/ast/ast.dart';
@@ -51,6 +55,7 @@ class _Visitor extends SimpleAstVisitor {
 
   @override
   void visitCompilationUnit(CompilationUnit node) {
+    // ignore: todo
     // TODO(Nomeleel): show hide etc. should ignore?
     final importList = node.directives.whereType<ImportDirective>();
     importList.forEach((element) {
