@@ -55,3 +55,7 @@ code_sharp:
 Other configuration node Code Sharp have also been implemented. More configuration nodes can be viewed in [analysis options](https://dart.dev/guides/language/analysis-options#the-analysis-options-file)
 
 <!-- example -->
+
+## Screenshot
+
+![code_sharp_1](https://raw.githubusercontent.com/Nomeleel/Assets/master/code_sharp/markdown/code_sharp_1.gif)
